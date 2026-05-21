@@ -1,8 +1,16 @@
 {
-  "name": "frontend",
-  "private": true,
-  "version": "0.0.0",
+  "name": "zengin-ai-debugger",
+  "version": "1.0.2",
   "type": "module",
+  "description": "Chrome Extension and local dashboard for real-time LangChain agents debugging",
+  "main": "./dist/index.html",
+  "bin": {
+    "zengin-ai-debugger": "./cli.js"
+  },
+  "files": [
+    "dist",
+    "cli.js"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,9 +18,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^4.21.2",
+    "open": "^10.1.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "reactflow": "^11.11.4"
+    "reactflow": "^11.11.4",
+    "ws": "^8.20.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -27,5 +38,19 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12"
-  }
+  },
+  "author": "Alexey Borodin",
+  "license": "LGPL-2.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zengin0201/AI_Debugger"
+  },
+  "keywords": [
+    "langchain",
+    "ai",
+    "debugger",
+    "devtools",
+    "chrome-extension",
+    "reactflow"
+  ]
 }
