@@ -1,57 +1,52 @@
-# 🚀 AI Visual Debugger (Chrome Extension & Web Dashboard)
+# 🚀 Zengin AI Debugger (Visual LangChain Debugger)
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 
-**ENGLISH** | [РУССКИЙ](#-ai-visual-debugger-chrome-расширение-и-веб-дашборд-ru)
+**ENGLISH** | [РУССКИЙ](#-zengin-ai-debugger-визуальный-отладчик-для-langchain-ru)
 
-A lightweight Chrome Extension and zero-config local tool for real-time visualization and debugging of LangChain AI agents. Watch your data flow through Prompts, LLMs, and Parsers in a beautiful interactive graph right in your browser.
+Stop reading endless console logs! This tool lets you see how your AI agent thinks **in real-time**. Data, prompts, LLMs, and parsers will be rendered as a beautiful interactive graph right in your browser.
 
-## 🌟 Architecture
-Since Chrome Extensions cannot listen to local ports directly, this project uses a modern two-part system:
-1. **The Relay Server (NPM):** A lightweight Node.js bridge (`cli.js`) that receives data from Python and sends it to the UI via WebSockets.
-2. **The Dashboard (React):** Renders the interactive flow graph. It works as a Chrome Extension AND as a standard web page.
-3. **The Plugin (`callback.py`):** Connects to your LangChain agent in Python with just a single line of code.
+This guide is written as simply as possible so absolutely anyone can run it! ☕️
 
----
-
-## 🚀 Quick Start Guide
-
-### Step 1: Start the Relay Server
-You don't even need to clone the repo to start the bridge! Just run our NPM package:
-```bash
-npx zengin-ai-debugger
-```
-*This will instantly start the WebSocket bridge on port 8000 and open a Web version of the dashboard in your browser.*
-
-### Step 2: Test with the provided AI Bot
-We included a ready-to-use test bot in the repository. Make sure [Ollama](https://ollama.com/) is running on your machine with the model `qwen2.5:1.5b` (or change the model inside `test_bot.py`).
-
-1. Download `callback.py` and `test_bot.py` from this repository.
-2. Open a terminal in that folder and run:
-```bash
-pip install httpx langchain-ollama
-python test_bot.py
-```
-Look at your browser at `localhost:8000` — you will instantly see the agent's pipeline being drawn!
-
-### Step 3: Install the Chrome Extension (Optional but Recommended)
-Want it as a native Chrome Extension instead of a webpage?
-1. Clone this repo and run `npm install` and `npm run build`.
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Turn on **Developer mode** (toggle in the top right corner).
-4. Click **Load unpacked** and select the `dist` folder.
-5. Pin the extension to your toolbar. When you click it, the debugger will open in a new tab!
+## 🛠 How does it work?
+The system consists of two parts that communicate with each other:
+1. **The Dashboard (Browser UI)** — installed via `npm` (Node.js). It draws the visual graph.
+2. **The Plugin (Python)** — installed via `pip`. It intercepts data from LangChain and sends it to the Dashboard.
 
 ---
 
-## 💻 How to use it in YOUR project
-Want to debug your own LangChain project? It takes 3 lines of code.
+## 📖 Step-by-step Guide for Beginners
 
-1. Download the `callback.py` file and place it next to your Python script.
-2. Ensure the relay server is running (`npx zengin-ai-debugger`).
-3. Pass the debugger to the `config` when invoking your chain.
+### Step 1: Install and run the Dashboard (UI)
+*You must have [Node.js](https://nodejs.org/) installed on your computer for this step.*
+
+Open your terminal (command prompt) and run this command for global installation:
+```bash
+npm install -g zengin-ai-debugger
+```
+
+Once the installation is complete, simply type in your terminal:
+```bash
+zengin-ai-debugger
+```
+🎉 **Done!** The server is running. A web page will automatically open in your browser at `http://localhost:8000`. Do not close this terminal while working with your AI agents.
+
+*(Alternative: if you don't want to install anything globally, you can just run `npx zengin-ai-debugger`).*
+
+### Step 2: Install the Python library in your project
+Open a **second** terminal in your Python project folder and install our plugin:
+```bash
+pip install zengin-ai-debugger
+```
+
+*(Make sure you also have the base libraries installed: `pip install langchain-core httpx`)*
+
+### Step 3: Inject the debugger into your code (just 3 lines!)
+Now let's add the magic to your code. Open your Python file containing the LangChain agent.
+
+Here is a ready-to-use example of how to do it:
 
 ```python
 import asyncio
@@ -59,87 +54,115 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# 1. Import the visual debugger
-from callback import RealUIDebuggerCallback
+# 👉 1. IMPORT OUR PLUGIN
+from zengin_ai_debugger import RealUIDebuggerCallback
 
 async def main():
+    # Create a standard LangChain sequence
     llm = ChatOpenAI(model="gpt-3.5-turbo")
     prompt = PromptTemplate.from_template("Write a fun fact about: {topic}")
     parser = StrOutputParser()
     
     chain = prompt | llm | parser
 
-    # 2. Initialize the plugin connecting to your npx server
-    ui_debugger = RealUIDebuggerCallback(server_url="http://localhost:8000")
+    # 👉 2. INITIALIZE THE DEBUGGER
+    # By default, it will send data to http://localhost:8000
+    ui_debugger = RealUIDebuggerCallback()
     
-    # 3. Pass it to the config when running!
+    print("Launching agent... Look at your browser!")
+
+    # 👉 3. PASS THE DEBUGGER TO THE CONFIG WHEN RUNNING
+    # IMPORTANT: You must use the asynchronous .ainvoke() method!
     response = await chain.ainvoke(
-        {"topic": "Space"}, 
+        {"topic": "Capybaras"}, 
         config={"callbacks": [ui_debugger]} 
     )
-    print(response)
+    
+    print("Response received:", response)
 
-asyncio.run(main())
+# Run the async code
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-> ⚠️ **IMPORTANT:** The debugger works asynchronously via WebSockets. You **must** use `.ainvoke()` instead of `.invoke()` to run your chains, otherwise the data won't be streamed to the UI!
+### ⚠️ VERY IMPORTANT RULE!
+The debugger works in real-time via WebSockets (asynchronously). 
+For the graph to be drawn, **you MUST use the asynchronous chain execution method:**
+* Correct: `await chain.ainvoke(...)` ✅
+* Incorrect: `chain.invoke(...)` ❌
 
+---
+
+## 🎮 How to use the interface
+1. Run `zengin-ai-debugger` in the first terminal.
+2. Open `http://localhost:8000` in your browser.
+3. Run your Python script in the second terminal.
+4. Blocks (Nodes) will start appearing in your browser.
+5. **Click on any block** to open the side panel. There you will see the exact text that entered this block (Input) and the text the block produced (Output).
+6. Click the **"Clear screen"** button to clear the canvas before your next run.
+
+---
+
+## 🧩 Using as a Chrome Extension
+If you prefer having the debugger always at hand directly in your browser toolbar:
+1. Locate the `dist` folder (it is generated when building the frontend).
+2. Open Google Chrome and navigate to `chrome://extensions/`.
+3. Turn on **Developer mode** (toggle in the top right corner).
+4. Click **Load unpacked** and select the `dist` folder.
+5. Pin the extension icon. Now the debugger opens with a single click!
+
+*(Note: The bridge server `zengin-ai-debugger` must still be running in your terminal to receive data from Python).*
 
 <br><br><br>
 
 ---
 ---
 
-<a name="-ai-visual-debugger-chrome-расширение-и-веб-дашборд-ru"></a>
+<a name="-zengin-ai-debugger-визуальный-отладчик-для-langchain-ru"></a>
 
-# 🚀 AI Visual Debugger (Chrome-расширение и Веб-дашборд) (RU)
+# 🚀 Zengin AI Debugger (Визуальный отладчик для LangChain) [RU]
 
-Легковесный инструмент для отладки ИИ-агентов (LangChain) в реальном времени. Хватит читать логи в консоли — смотрите, как данные проходят через промпты, нейросети и парсеры на красивом графе прямо в браузере.
+Хватит читать бесконечные логи в консоли! Этот инструмент позволяет вам **в реальном времени** видеть, как ваш ИИ-агент думает. Данные, промпты, нейросети и парсеры будут отрисовываться в виде красивого графа прямо в вашем браузере.
 
-## 🌟 Как это работает
-Так как расширения Chrome не могут напрямую слушать порты, мы используем современный подход:
-1. **Сервер-мост (NPM):** Легковесный Node.js скрипт (`cli.js`), который тихо работает в фоне, получает POST-запросы от Python и пересылает их в UI по WebSockets.
-2. **Дашборд (React):** Отрисовывает интерактивный граф. Работает и как Chrome-расширение, и как обычный сайт.
-3. **Плагин (`callback.py`):** Подключается к вашему LangChain агенту одной строчкой кода.
+Инструкция написана максимально просто, чтобы запустить инструмент смог каждый! ☕️
 
----
-
-## 🚀 Пошаговая инструкция
-
-### Шаг 1: Запуск сервера-моста
-Вам даже не нужно клонировать репозиторий, чтобы запустить интерфейс! Просто выполните команду в любом терминале:
-```bash
-npx zengin-ai-debugger
-```
-*Это мгновенно запустит WebSocket-мост на порту 8000 и откроет веб-версию дашборда в вашем браузере.*
-
-### Шаг 2: Тест готового бота
-Мы подготовили тестового бота. Убедитесь, что у вас запущена локальная [Ollama](https://ollama.com/) с моделью `qwen2.5:1.5b` (или измените модель внутри `test_bot.py`).
-
-1. Скачайте файлы `callback.py` и `test_bot.py` из этого репозитория.
-2. Откройте новый терминал в этой папке и запустите:
-```bash
-pip install httpx langchain-ollama
-python test_bot.py
-```
-Посмотрите в браузер на `localhost:8000` — шаги агента, его входы и выходы мгновенно отрисуются в реальном времени!
-
-### Шаг 3: Установка Chrome-расширения (Опционально)
-Хотите использовать инструмент как нативное расширение Chrome?
-1. Склонируйте этот репозиторий, выполните `npm install` и `npm run build`.
-2. Откройте Google Chrome и перейдите по адресу `chrome://extensions/`.
-3. Включите **Режим разработчика**.
-4. Нажмите **Загрузить распакованное расширение** и выберите папку `dist`.
-5. Закрепите расширение. При клике на иконку дашборд будет удобно открываться в новой вкладке!
+## 🛠 Как это работает?
+Система состоит из двух частей, которые общаются друг с другом:
+1. **Дашборд (Интерфейс в браузере)** — устанавливается через `npm` (Node.js). Он рисует граф.
+2. **Плагин (Python)** — устанавливается через `pip`. Он перехватывает данные из LangChain и отправляет их в Дашборд.
 
 ---
 
-## 💻 Как внедрить это в ВАШ проект
-Хотите дебажить собственный LangChain код? Это займет 3 строчки.
+## 📖 Пошаговая инструкция для новичков
 
-1. Скачайте файл `callback.py` и положите рядом со своим Python-скриптом.
-2. Убедитесь, что мост работает (`npx zengin-ai-debugger`).
-3. Передайте дебаггер в `config` при запуске цепочки.
+### Шаг 1: Установка и запуск Интерфейса (Дашборда)
+*Для этого шага на вашем компьютере должен быть установлен [Node.js](https://nodejs.org/).*
+
+Откройте терминал (командную строку) и введите команду для глобальной установки:
+```bash
+npm install -g zengin-ai-debugger
+```
+
+После завершения установки просто напишите в терминале:
+```bash
+zengin-ai-debugger
+```
+🎉 **Готово!** Сервер запущен. У вас в браузере автоматически откроется страница `http://localhost:8000`. Не закрывайте этот терминал, пока работаете с агентами.
+
+*(Альтернатива: если не хотите ничего устанавливать глобально, можно просто запустить `npx zengin-ai-debugger`).*
+
+### Шаг 2: Установка Python-библиотеки в ваш проект
+Откройте **второй** терминал в папке с вашим Python-проектом и установите наш плагин:
+```bash
+pip install zengin-ai-debugger
+```
+
+*(Убедитесь, что у вас также установлены базовые библиотеки: `pip install langchain-core httpx`)*
+
+### Шаг 3: Внедряем отладчик в ваш код (всего 3 строчки!)
+Теперь добавим магию в ваш код. Откройте ваш Python-файл с LangChain агентом. 
+
+Вот готовый пример того, как это делается:
 
 ```python
 import asyncio
@@ -147,27 +170,61 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# 1. Импортируем визуальный отладчик
-from callback import RealUIDebuggerCallback
+# 👉 1. ИМПОРТИРУЕМ НАШ ПЛАГИН
+from zengin_ai_debugger import RealUIDebuggerCallback
 
 async def main():
+    # Создаем стандартную цепочку LangChain
     llm = ChatOpenAI(model="gpt-3.5-turbo")
-    prompt = PromptTemplate.from_template("Напиши факт про: {topic}")
+    prompt = PromptTemplate.from_template("Напиши забавный факт про: {topic}")
     parser = StrOutputParser()
     
     chain = prompt | llm | parser
 
-    # 2. Инициализируем плагин, подключаясь к npx серверу
-    ui_debugger = RealUIDebuggerCallback(server_url="http://localhost:8000")
+    # 👉 2. СОЗДАЕМ ОТЛАДЧИК
+    # Он по умолчанию будет слать данные на http://localhost:8000
+    ui_debugger = RealUIDebuggerCallback()
     
-    # 3. Передаем его в config при запуске!
+    print("Запускаем агента... Смотрите в браузер!")
+
+    # 👉 3. ПЕРЕДАЕМ ОТЛАДЧИК В CONFIG ПРИ ЗАПУСКЕ
+    # ВАЖНО: Используйте именно асинхронный метод .ainvoke()!
     response = await chain.ainvoke(
-        {"topic": "Космос"}, 
+        {"topic": "Капибары"}, 
         config={"callbacks": [ui_debugger]} 
     )
-    print(response)
+    
+    print("Ответ получен:", response)
 
-asyncio.run(main())
+# Запускаем асинхронный код
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-> ⚠️ **ОЧЕНЬ ВАЖНО:** Дебаггер работает асинхронно через WebSockets. Для запуска ваших цепочек вы **обязательно** должны использовать метод `.ainvoke()` вместо `.invoke()`, иначе данные не поступят в интерфейс!
+### ⚠️ ОЧЕНЬ ВАЖНОЕ ПРАВИЛО!
+Дебаггер работает в реальном времени через веб-сокеты (асинхронно). 
+Для того чтобы граф рисовался, **вы ОБЯЗАТЕЛЬНО должны использовать асинхронный запуск цепочки:**
+* Правильно: `await chain.ainvoke(...)` ✅
+* Неправильно: `chain.invoke(...)` ❌
+
+---
+
+## 🎮 Как пользоваться интерфейсом
+1. Запустили `zengin-ai-debugger` в первом терминале.
+2. Открыли `http://localhost:8000` в браузере.
+3. Запустили ваш Python-скрипт во втором терминале.
+4. В браузере начнут появляться блоки (Ноды).
+5. **Кликните на любой блок**, чтобы справа открылась панель. Там вы увидите, какой именно текст вошел в этот блок (Input) и какой текст блок выдал в качестве результата (Output).
+6. Нажмите кнопку **"Clear screen"**, чтобы очистить холст перед следующим запуском.
+
+---
+
+## 🧩 Использование в виде Chrome-расширения
+Если вам удобнее, чтобы отладчик всегда был под рукой прямо в панели браузера:
+1. Найдите папку `dist` (она создается при билде фронтенда).
+2. Откройте Google Chrome и перейдите по адресу `chrome://extensions/`.
+3. Включите **Режим разработчика** (тумблер справа сверху).
+4. Нажмите **Загрузить распакованное расширение** и выберите папку `dist`.
+5. Закрепите иконку. Теперь отладчик открывается по одному клику!
+
+*(Сервер моста `zengin-ai-debugger` в терминале всё равно должен быть запущен, чтобы получать данные из Python).*
