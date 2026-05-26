@@ -9,7 +9,13 @@
 Stop reading endless console logs! This tool lets you see how your AI agent thinks **in real-time**. Data, prompts, LLMs, and parsers will be rendered as a beautiful interactive graph right in your browser.
 
 This guide is written as simply as possible so absolutely anyone can run it! ☕️
-<img width="2549" height="1311" alt="image" src="https://github.com/user-attachments/assets/0713061b-a411-4a54-8ccd-a7f03fc60798" />
+
+<img width="800" height="450" alt="ezgif-7962fcb73c989b28" src="https://github.com/user-attachments/assets/4a35530f-52d6-4127-967b-5485f4ed2999" />
+
+
+
+
+
 
 
 
