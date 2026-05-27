@@ -3,6 +3,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![npm version](https://img.shields.io/npm/v/zengin-ai-debugger.svg?color=blue)](https://www.npmjs.com/package/zengin-ai-debugger)
+[![PyPI version](https://img.shields.io/pypi/v/zengin-ai-debugger.svg?color=blue)](https://pypi.org/project/zengin-ai-debugger/)
 
 **ENGLISH** | [РУССКИЙ](#-zengin-ai-debugger-визуальный-отладчик-для-langchain-ru)
 
@@ -10,14 +12,15 @@ Stop reading endless console logs! This tool lets you see how your AI agent thin
 
 This guide is written as simply as possible so absolutely anyone can run it! ☕️
 
-<img width="800" height="450" alt="ezgif-7962fcb73c989b28" src="https://github.com/user-attachments/assets/4a35530f-52d6-4127-967b-5485f4ed2999" />
+<img width="800" height="450" alt="Zengin AI Debugger Demo" src="https://github.com/user-attachments/assets/4a35530f-52d6-4127-967b-5485f4ed2999" />
 
+## ✨ Key Features
+* ⚡ **Real-time Visualization:** Watch your LangChain graph build itself dynamically as the agent runs.
+* 💰 **Cost & Token Tracking:** Automatically calculates token usage and estimated costs for LLM calls.
+* 🛡️ **PII Masking:** Automatically hides sensitive data (emails, credit cards) from the debugger UI for security.
+* 🔍 **Deep Inspection:** Click on any node to see exact Inputs, Outputs, execution time, and Error Stack Traces.
 
-
-
-
-
-
+---
 
 ## 🛠 How does it work?
 The system consists of two parts that communicate with each other:
@@ -26,26 +29,26 @@ The system consists of two parts that communicate with each other:
 
 ---
 
-## 📖 Step-by-step Guide for Beginners
+## 📖 Step-by-step Guide
 
 ### Step 1: Install and run the Dashboard (UI)
 *You must have [Node.js](https://nodejs.org/) installed on your computer for this step.*
 
-Open your terminal (command prompt) and run this command for global installation:
+Open your terminal and run this command for global installation:
 ```bash
 npm install -g zengin-ai-debugger
 ```
 
-Once the installation is complete, simply type in your terminal:
+Once the installation is complete, simply type in your terminal to start the UI server:
 ```bash
 zengin-ai-debugger
 ```
-🎉 **Done!** The server is running. A web page will automatically open in your browser at `http://localhost:8000`. Do not close this terminal while working with your AI agents.
+🎉 **Done!** The bridge server is running. A web page will open in your browser at `http://localhost:8000`. **Do not close this terminal while debugging.**
 
 *(Alternative: if you don't want to install anything globally, you can just run `npx zengin-ai-debugger`).*
 
 ### Step 2: Install the Python library in your project
-Open a **second** terminal in your Python project folder and install our plugin:
+Open a **second** terminal in your Python project folder and install our plugin from PyPI:
 ```bash
 pip install zengin-ai-debugger
 ```
@@ -55,7 +58,7 @@ pip install zengin-ai-debugger
 ### Step 3: Inject the debugger into your code (just 3 lines!)
 Now let's add the magic to your code. Open your Python file containing the LangChain agent.
 
-Here is a ready-to-use example of how to do it:
+Here is a ready-to-use example:
 
 ```python
 import asyncio
@@ -75,7 +78,7 @@ async def main():
     chain = prompt | llm | parser
 
     # 👉 2. INITIALIZE THE DEBUGGER
-    # By default, it will send data to http://localhost:8000
+    # By default, it sends data to http://localhost:8000
     ui_debugger = RealUIDebuggerCallback()
     
     print("Launching agent... Look at your browser!")
@@ -89,38 +92,27 @@ async def main():
     
     print("Response received:", response)
 
-# Run the async code
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### ⚠️ VERY IMPORTANT RULE!
-The debugger works in real-time via WebSockets (asynchronously). 
-For the graph to be drawn, **you MUST use the asynchronous chain execution method:**
-* Correct: `await chain.ainvoke(...)` ✅
-* Incorrect: `chain.invoke(...)` ❌
+> ⚠️ **VERY IMPORTANT RULE!**
+> The debugger works in real-time via WebSockets. For the graph to be drawn correctly, **you MUST use the asynchronous chain execution method:**
+> * Correct: `await chain.ainvoke(...)` ✅
+> * Incorrect: `chain.invoke(...)` ❌
 
 ---
 
-## 🎮 How to use the interface
-1. Run `zengin-ai-debugger` in the first terminal.
-2. Open `http://localhost:8000` in your browser.
-3. Run your Python script in the second terminal.
-4. Blocks (Nodes) will start appearing in your browser.
-5. **Click on any block** to open the side panel. There you will see the exact text that entered this block (Input) and the text the block produced (Output).
-6. Click the **"Clear screen"** button to clear the canvas before your next run.
-
----
-
-## 🧩 Using as a Chrome Extension
+## 🧩 Using as a Chrome Extension (Optional)
 If you prefer having the debugger always at hand directly in your browser toolbar:
-1. Locate the `dist` folder (it is generated when building the frontend).
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Turn on **Developer mode** (toggle in the top right corner).
-4. Click **Load unpacked** and select the `dist` folder.
-5. Pin the extension icon. Now the debugger opens with a single click!
+1. Clone this repository to your PC: `git clone https://github.com/zengin0201/AI_Debugger.git`
+2. Run `npm install` and `npm run build` inside the folder.
+3. Open Google Chrome and navigate to `chrome://extensions/`.
+4. Turn on **Developer mode** (toggle in the top right corner).
+5. Click **Load unpacked** and select the generated `dist` folder.
+6. Pin the extension icon. Now the debugger opens with a single click!
 
-*(Note: The bridge server `zengin-ai-debugger` must still be running in your terminal to receive data from Python).*
+*(Note: The bridge server `zengin-ai-debugger` must still be running in your terminal).*
 
 <br><br><br>
 
@@ -131,9 +123,17 @@ If you prefer having the debugger always at hand directly in your browser toolba
 
 # 🚀 Zengin AI Debugger (Визуальный отладчик для LangChain) [RU]
 
-Хватит читать бесконечные логи в консоли! Этот инструмент позволяет вам **в реальном времени** видеть, как ваш ИИ-агент думает. Данные, промпты, нейросети и парсеры будут отрисовываться в виде красивого графа прямо в вашем браузере.
+Хватит читать бесконечные логи в консоли! Этот инструмент позволяет вам **в реальном времени** видеть, как ваш ИИ-агент думает. Данные, промпты, нейросети и парсеры будут отрисовываться в виде красивого интерактивного графа прямо в вашем браузере.
 
 Инструкция написана максимально просто, чтобы запустить инструмент смог каждый! ☕️
+
+## ✨ Главные фишки
+* ⚡ **Рендеринг в реальном времени:** Наблюдайте, как граф LangChain строится прямо во время работы агента.
+* 💰 **Подсчет токенов и стоимости:** Автоматически считает потраченные токены и примерную стоимость запросов к LLM.
+* 🛡️ **Защита данных (PII Masking):** Скрывает конфиденциальные данные (email, номера кредитных карт) в интерфейсе отладчика.
+* 🔍 **Глубокая инспекция:** Кликните на любой узел, чтобы увидеть точные Input/Output, время выполнения и трейсы ошибок.
+
+---
 
 ## 🛠 Как это работает?
 Система состоит из двух частей, которые общаются друг с другом:
@@ -142,7 +142,7 @@ If you prefer having the debugger always at hand directly in your browser toolba
 
 ---
 
-## 📖 Пошаговая инструкция для новичков
+## 📖 Пошаговая инструкция
 
 ### Шаг 1: Установка и запуск Интерфейса (Дашборда)
 *Для этого шага на вашем компьютере должен быть установлен [Node.js](https://nodejs.org/).*
@@ -156,12 +156,12 @@ npm install -g zengin-ai-debugger
 ```bash
 zengin-ai-debugger
 ```
-🎉 **Готово!** Сервер запущен. У вас в браузере автоматически откроется страница `http://localhost:8000`. Не закрывайте этот терминал, пока работаете с агентами.
+🎉 **Готово!** Сервер запущен. У вас в браузере автоматически откроется страница `http://localhost:8000`. **Не закрывайте этот терминал, пока отлаживаете агентов.**
 
 *(Альтернатива: если не хотите ничего устанавливать глобально, можно просто запустить `npx zengin-ai-debugger`).*
 
 ### Шаг 2: Установка Python-библиотеки в ваш проект
-Откройте **второй** терминал в папке с вашим Python-проектом и установите наш плагин:
+Откройте **второй** терминал в папке с вашим Python-проектом и установите наш плагин из PyPI:
 ```bash
 pip install zengin-ai-debugger
 ```
@@ -205,35 +205,24 @@ async def main():
     
     print("Ответ получен:", response)
 
-# Запускаем асинхронный код
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### ⚠️ ОЧЕНЬ ВАЖНОЕ ПРАВИЛО!
-Дебаггер работает в реальном времени через веб-сокеты (асинхронно). 
-Для того чтобы граф рисовался, **вы ОБЯЗАТЕЛЬНО должны использовать асинхронный запуск цепочки:**
-* Правильно: `await chain.ainvoke(...)` ✅
-* Неправильно: `chain.invoke(...)` ❌
+> ⚠️ **ОЧЕНЬ ВАЖНОЕ ПРАВИЛО!**
+> Дебаггер работает в реальном времени через веб-сокеты. Для того чтобы граф рисовался корректно, **вы ОБЯЗАТЕЛЬНО должны использовать асинхронный запуск цепочки:**
+> * Правильно: `await chain.ainvoke(...)` ✅
+> * Неправильно: `chain.invoke(...)` ❌
 
 ---
 
-## 🎮 Как пользоваться интерфейсом
-1. Запустили `zengin-ai-debugger` в первом терминале.
-2. Открыли `http://localhost:8000` в браузере.
-3. Запустили ваш Python-скрипт во втором терминале.
-4. В браузере начнут появляться блоки (Ноды).
-5. **Кликните на любой блок**, чтобы справа открылась панель. Там вы увидите, какой именно текст вошел в этот блок (Input) и какой текст блок выдал в качестве результата (Output).
-6. Нажмите кнопку **"Clear screen"**, чтобы очистить холст перед следующим запуском.
-
----
-
-## 🧩 Использование в виде Chrome-расширения
+## 🧩 Использование в виде Chrome-расширения (Опционально)
 Если вам удобнее, чтобы отладчик всегда был под рукой прямо в панели браузера:
-1. Найдите папку `dist` (она создается при билде фронтенда).
-2. Откройте Google Chrome и перейдите по адресу `chrome://extensions/`.
-3. Включите **Режим разработчика** (тумблер справа сверху).
-4. Нажмите **Загрузить распакованное расширение** и выберите папку `dist`.
-5. Закрепите иконку. Теперь отладчик открывается по одному клику!
+1. Склонируйте этот репозиторий: `git clone https://github.com/zengin0201/AI_Debugger.git`
+2. Выполните внутри `npm install` и затем `npm run build`.
+3. Откройте Google Chrome и перейдите по адресу `chrome://extensions/`.
+4. Включите **Режим разработчика** (тумблер справа сверху).
+5. Нажмите **Загрузить распакованное расширение** и выберите созданную папку `dist`.
+6. Закрепите иконку. Теперь отладчик открывается по одному клику!
 
-*(Сервер моста `zengin-ai-debugger` в терминале всё равно должен быть запущен, чтобы получать данные из Python).*
+*(Внимание: Сервер моста `zengin-ai-debugger` всё равно должен быть запущен в терминале для получения данных).*
