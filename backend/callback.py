@@ -70,7 +70,6 @@ class RealUIDebuggerCallback(AsyncCallbackHandler):
             await self._send({"type": "edge_added", "source": str(parent_run_id), "target": str(run_id)})
 
     async def on_chat_model_start(self, serialized: Dict[str, Any], messages: List[List[Any]], *, run_id: UUID, parent_run_id: Optional[UUID] = None, **kwargs: Any):
-        # Триггерится для Chat-моделей (например ChatOpenAI)
         name = self._get_node_name(serialized, kwargs, "Chat Model")
         self.start_times[str(run_id)] = time.time()
         prompt_text = mask_pii(messages[0][0].content if messages and messages[0] else str(messages))
