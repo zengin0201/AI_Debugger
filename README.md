@@ -115,8 +115,8 @@ print("Response received:", response)
 
 ## 🧩 Using as a Chrome Extension (Optional)
 Now the debugger works as a true browser extension! To install it:
-1. Clone this repository to your PC: `git clone https://github.com/zengin0201/AI_Debugger.git`
-2. Run `npm install` and then `npm run build` inside the folder. This will create a `dist` directory.
+1. Enter to the frontend
+2. Find dist
 3. Open Google Chrome and navigate to `chrome://extensions/`.
 4. Turn on **Developer mode** (toggle in the top right corner).
 5. Click **Load unpacked** and select the generated `dist` folder.
@@ -238,8 +238,8 @@ print("Ответ получен:", response)
 
 ## 🧩 Использование в виде Chrome-расширения (Опционально)
 Теперь отладчик работает как полноценное расширение! Чтобы установить его:
-1. Склонируйте этот репозиторий: `git clone https://github.com/zengin0201/AI_Debugger.git`
-2. Выполните внутри команду `npm install` и затем `npm run build`. Это создаст папку `dist`.
+1. Зайдите в папку frontend и найдите папку dist
+2. 2. Скачайте ее.
 3. Откройте Google Chrome и перейдите по адресу `chrome://extensions/`.
 4. Включите **Режим разработчика** (тумблер справа сверху).
 5. Нажмите **Загрузить распакованное расширение** и выберите созданную папку `dist`.
