@@ -30,13 +30,6 @@ The system consists of two parts that communicate with each other:
 
 ---
 
-## 🚀 Quick Start (1-Click Run)
-If you don't want to type commands manually, just clone/download this repository and run the startup script:
-- **For Windows:** Double-click on the `start.bat` file.
-- **For Mac/Linux:** Run `./start.sh` in your terminal.
-
-The script will automatically check for Node.js/Python, install the necessary packages, and launch the bridge server!
-
 ---
 
 ## 📖 Manual Step-by-step Guide
@@ -152,13 +145,6 @@ Now the debugger works as a true browser extension! To install it:
 2. **Плагин (Python)** — устанавливается через `pip`. Он перехватывает данные из LangChain и отправляет их в Дашборд.
 
 ---
-
-## 🚀 Самый быстрый старт (Запуск в 1 клик)
-Если вы не хотите вводить команды вручную, просто скачайте (или склонируйте) этот репозиторий и запустите скрипт:
-- **Для Windows:** Кликните два раза по файлу `start.bat`
-- **Для Mac/Linux:** Выполните в терминале `./start.sh`
-
-Скрипт сам проверит наличие Node.js и Python, установит нужные пакеты и запустит сервер интерфейса!
 
 ---
 
