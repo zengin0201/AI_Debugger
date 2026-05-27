@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  zengin-debugger:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./debugger_history.sqlite:/app/debugger_history.sqlite
+    restart: unless-stopped
