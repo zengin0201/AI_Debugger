@@ -19,6 +19,7 @@ This guide is written as simply as possible so absolutely anyone can run it! ☕
 * 💰 **Cost & Token Tracking:** Automatically calculates token usage and estimated costs for LLM calls.
 * 🛡️ **PII Masking:** Automatically hides sensitive data (emails, credit cards) from the debugger UI for security.
 * 🔍 **Deep Inspection:** Click on any node to see exact Inputs, Outputs, execution time, and Error Stack Traces.
+* 🔄 **Universal:** Works perfectly with both synchronous (`.invoke()`) and asynchronous (`.ainvoke()`) chains.
 
 ---
 
@@ -53,7 +54,7 @@ Open a **second** terminal in your Python project folder and install our plugin 
 pip install zengin-ai-debugger
 ```
 
-*(Make sure you also have the base libraries installed: `pip install langchain-core httpx`)*
+*(Make sure you also have the base libraries installed: `pip install langchain-core requests`)*
 
 ### Step 3: Inject the debugger into your code (just 3 lines!)
 Now let's add the magic to your code. Open your Python file containing the LangChain agent.
@@ -61,7 +62,6 @@ Now let's add the magic to your code. Open your Python file containing the LangC
 Here is a ready-to-use example:
 
 ```python
-import asyncio
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -69,37 +69,38 @@ from langchain_core.output_parsers import StrOutputParser
 # 👉 1. IMPORT OUR PLUGIN
 from zengin_ai_debugger import RealUIDebuggerCallback
 
-async def main():
-    # Create a standard LangChain sequence
-    llm = ChatOpenAI(model="gpt-3.5-turbo")
-    prompt = PromptTemplate.from_template("Write a fun fact about: {topic}")
-    parser = StrOutputParser()
-    
-    chain = prompt | llm | parser
+# Create a standard LangChain sequence
+llm = ChatOpenAI(model="gpt-3.5-turbo")
+prompt = PromptTemplate.from_template("Write a fun fact about: {topic}")
+parser = StrOutputParser()
 
-    # 👉 2. INITIALIZE THE DEBUGGER
-    # By default, it sends data to http://localhost:8000
-    ui_debugger = RealUIDebuggerCallback()
-    
-    print("Launching agent... Look at your browser!")
+chain = prompt | llm | parser
 
-    # 👉 3. PASS THE DEBUGGER TO THE CONFIG WHEN RUNNING
-    # IMPORTANT: You must use the asynchronous .ainvoke() method!
-    response = await chain.ainvoke(
-        {"topic": "Capybaras"}, 
-        config={"callbacks": [ui_debugger]} 
-    )
-    
-    print("Response received:", response)
+# 👉 2. INITIALIZE THE DEBUGGER
+# By default, it sends data to http://localhost:8000
+ui_debugger = RealUIDebuggerCallback()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+print("Launching agent... Look at your browser!")
+
+# 👉 3. PASS THE DEBUGGER TO THE CONFIG WHEN RUNNING
+response = chain.invoke(
+    {"topic": "Capybaras"}, 
+    config={"callbacks": [ui_debugger]} 
+)
+
+print("Response received:", response)
 ```
+*(Note: The debugger works seamlessly with both synchronous `chain.invoke()` and asynchronous `await chain.ainvoke()` methods!)*
 
-> ⚠️ **VERY IMPORTANT RULE!**
-> The debugger works in real-time via WebSockets. For the graph to be drawn correctly, **you MUST use the asynchronous chain execution method:**
-> * Correct: `await chain.ainvoke(...)` ✅
-> * Incorrect: `chain.invoke(...)` ❌
+---
+
+## 🎮 How to use the interface
+1. Run `zengin-ai-debugger` in the first terminal.
+2. Open `http://localhost:8000` in your browser.
+3. Run your Python script in the second terminal.
+4. Blocks (Nodes) will start appearing in your browser.
+5. **Click on any block** to open the side panel. There you will see the exact text that entered this block (Input) and the text the block produced (Output).
+6. Click the **"Clear screen"** button to clear the canvas before your next run.
 
 ---
 
@@ -132,6 +133,7 @@ If you prefer having the debugger always at hand directly in your browser toolba
 * 💰 **Подсчет токенов и стоимости:** Автоматически считает потраченные токены и примерную стоимость запросов к LLM.
 * 🛡️ **Защита данных (PII Masking):** Скрывает конфиденциальные данные (email, номера кредитных карт) в интерфейсе отладчика.
 * 🔍 **Глубокая инспекция:** Кликните на любой узел, чтобы увидеть точные Input/Output, время выполнения и трейсы ошибок.
+* 🔄 **Универсальность:** Отлично работает как с синхронными (`.invoke()`), так и с асинхронными (`.ainvoke()`) цепочками.
 
 ---
 
@@ -166,7 +168,7 @@ zengin-ai-debugger
 pip install zengin-ai-debugger
 ```
 
-*(Убедитесь, что у вас также установлены базовые библиотеки: `pip install langchain-core httpx`)*
+*(Убедитесь, что у вас также установлены базовые библиотеки: `pip install langchain-core requests`)*
 
 ### Шаг 3: Внедряем отладчик в ваш код (всего 3 строчки!)
 Теперь добавим магию в ваш код. Откройте ваш Python-файл с LangChain агентом. 
@@ -174,7 +176,6 @@ pip install zengin-ai-debugger
 Вот готовый пример того, как это делается:
 
 ```python
-import asyncio
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -182,37 +183,38 @@ from langchain_core.output_parsers import StrOutputParser
 # 👉 1. ИМПОРТИРУЕМ НАШ ПЛАГИН
 from zengin_ai_debugger import RealUIDebuggerCallback
 
-async def main():
-    # Создаем стандартную цепочку LangChain
-    llm = ChatOpenAI(model="gpt-3.5-turbo")
-    prompt = PromptTemplate.from_template("Напиши забавный факт про: {topic}")
-    parser = StrOutputParser()
-    
-    chain = prompt | llm | parser
+# Создаем стандартную цепочку LangChain
+llm = ChatOpenAI(model="gpt-3.5-turbo")
+prompt = PromptTemplate.from_template("Напиши забавный факт про: {topic}")
+parser = StrOutputParser()
 
-    # 👉 2. СОЗДАЕМ ОТЛАДЧИК
-    # Он по умолчанию будет слать данные на http://localhost:8000
-    ui_debugger = RealUIDebuggerCallback()
-    
-    print("Запускаем агента... Смотрите в браузер!")
+chain = prompt | llm | parser
 
-    # 👉 3. ПЕРЕДАЕМ ОТЛАДЧИК В CONFIG ПРИ ЗАПУСКЕ
-    # ВАЖНО: Используйте именно асинхронный метод .ainvoke()!
-    response = await chain.ainvoke(
-        {"topic": "Капибары"}, 
-        config={"callbacks": [ui_debugger]} 
-    )
-    
-    print("Ответ получен:", response)
+# 👉 2. СОЗДАЕМ ОТЛАДЧИК
+# Он по умолчанию будет слать данные на http://localhost:8000
+ui_debugger = RealUIDebuggerCallback()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+print("Запускаем агента... Смотрите в браузер!")
+
+# 👉 3. ПЕРЕДАЕМ ОТЛАДЧИК В CONFIG ПРИ ЗАПУСКЕ
+response = chain.invoke(
+    {"topic": "Капибары"}, 
+    config={"callbacks": [ui_debugger]} 
+)
+
+print("Ответ получен:", response)
 ```
+*(Примечание: Отладчик отлично работает как с синхронным запуском `chain.invoke()`, так и с асинхронным `await chain.ainvoke()`!)*
 
-> ⚠️ **ОЧЕНЬ ВАЖНОЕ ПРАВИЛО!**
-> Дебаггер работает в реальном времени через веб-сокеты. Для того чтобы граф рисовался корректно, **вы ОБЯЗАТЕЛЬНО должны использовать асинхронный запуск цепочки:**
-> * Правильно: `await chain.ainvoke(...)` ✅
-> * Неправильно: `chain.invoke(...)` ❌
+---
+
+## 🎮 Как пользоваться интерфейсом
+1. Запустили `zengin-ai-debugger` в первом терминале.
+2. Открыли `http://localhost:8000` в браузере.
+3. Запустили ваш Python-скрипт во втором терминале.
+4. В браузере начнут появляться блоки (Ноды).
+5. **Кликните на любой блок**, чтобы справа открылась панель. Там вы увидите, какой именно текст вошел в этот блок (Input) и какой текст блок выдал в качестве результата (Output).
+6. Нажмите кнопку **"Clear screen"**, чтобы очистить холст перед следующим запуском.
 
 ---
 
@@ -226,3 +228,4 @@ if __name__ == "__main__":
 6. Закрепите иконку. Теперь отладчик открывается по одному клику!
 
 *(Внимание: Сервер моста `zengin-ai-debugger` всё равно должен быть запущен в терминале для получения данных).*
+```
