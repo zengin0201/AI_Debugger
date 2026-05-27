@@ -1,6 +1,6 @@
 {
   "name": "zengin-ai-debugger",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "type": "module",
   "description": "Chrome Extension and local dashboard for real-time LangChain agents debugging",
   "main": "./dist/index.html",
@@ -18,15 +18,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "better-sqlite3": "^12.10.0",
+    "dagre": "^0.8.5",
     "express": "^4.21.2",
     "open": "^10.1.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-syntax-highlighter": "^16.1.1",
     "reactflow": "^11.11.4",
     "ws": "^8.20.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/dagre": "^0.7.54",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
